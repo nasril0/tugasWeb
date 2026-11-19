@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+      <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+
+    <!-- Halaman Kedua -->
+    <section class="content">
+
+        <div class="card">
+
+            <h1>Tentang Saya</h1>
+
+            <p id="aboutText">
+                Halo Pengunjung! Selamat datang di halaman kedua website saya.
+            </p>
+
+            <a href="index.html" class="button" id="backBtn">
+                 Kembali ke Halaman Utama
+            </a>
+
+        </div>
+
+    </section>
+
+    <script>
+        const namaPengguna = "Pengunjung";
+        document.getElementById("aboutText").textContent = `Halo ${namaPengguna}! Selamat datang di halaman kedua website saya.`;
+
+        document.getElementById("backBtn").addEventListener("click", function (event) {
+            event.preventDefault();
+            alert("Kembali ke halaman utama");
+            window.location.href = this.href;
+        });
+    </script>
+
+</body>
+
+</html>

@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Beranda - Website Saya</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <!-- Halaman Utama -->
+    <section class="hero">
+
+        <div class="hero-content">
+
+            <h1 id="greetingText">Hallo, Selamat Datang</h1>
+
+            <p id="timeText">Selamat datang di website sederhana saya.</p>
+
+            <div class="quote-section" aria-label="Kutipan inspiratif">
+                <p class="quote-label">Kutipan hari ini</p>
+                <p id="quoteText" aria-live="polite">“Langkah kecil yang dilakukan dengan tekun akan membawa kita lebih dekat pada tujuan.”</p>
+                <p id="quoteAuthor"></p>
+                <button type="button" class="button button-secondary" id="refreshQuoteBtn">
+                    Kutipan lain
+                </button>
+            </div>
+
+            <a href="tentang.html" class="button" id="masukBtn">
+                Masuk
+            </a>
+
+        </div>
+
+    </section>
+
+    <script>
+        const waktuSekarang = new Date();
+        const jam = waktuSekarang.getHours();
+
+        let ucapan = "Selamat datang";
+        if (jam >= 5 && jam < 12) {
+            ucapan = "Selamat pagi";
+        } else if (jam >= 12 && jam < 15) {
+            ucapan = "Selamat siang";
+        } else if (jam >= 15 && jam < 18) {
+            ucapan = "Selamat sore";
+        } else {
+            ucapan = "Selamat malam";
+        }
+
+        document.getElementById("greetingText").textContent = `${ucapan}, Selamat Datang`;
+        document.getElementById("timeText").textContent = `Sekarang jam ${waktuSekarang.toLocaleTimeString("id-ID", {
+            hour: "2-digit",
+            minute: "2-digit"
+        })}`;
+
+        const quoteText = document.getElementById("quoteText");
+        const quoteAuthor = document.getElementById("quoteAuthor");
+        const refreshQuoteBtn = document.getElementById("refreshQuoteBtn");
+        const fallbackQuote = quoteText.textContent;
+
+        async function loadQuote() {
+            refreshQuoteBtn.disabled = true;
+            quoteAuthor.textContent = "";
+
+            try {
+                const response = await fetch("https://dummyjson.com/quotes/random");
+                if (!response.ok) {
+                    throw new Error("Permintaan API gagal");
+                }
+
+                const quote = await response.json();
+                const translationUrl = new URL("https://api.mymemory.translated.net/get");
+                translationUrl.searchParams.set("q", quote.quote);
+                translationUrl.searchParams.set("langpair", "en|id");
+
+                const translationResponse = await fetch(translationUrl);
+                if (!translationResponse.ok) {
+                    throw new Error("Terjemahan kutipan gagal");
+                }
+
+                const translation = await translationResponse.json();
+                quoteText.textContent = `“${translation.responseData.translatedText}”`;
+                quoteAuthor.textContent = `— ${quote.author}`;
+            } catch {
+                quoteText.textContent = fallbackQuote;
+                quoteAuthor.textContent = "API tidak tersedia, menampilkan kutipan lokal.";
+            } finally {
+                refreshQuoteBtn.disabled = false;
+            }
+        }
+
+        refreshQuoteBtn.addEventListener("click", loadQuote);
+        loadQuote();
+
+        document.getElementById("masukBtn").addEventListener("click", function (event) {
+            event.preventDefault();
+            alert("Anda akan masuk ke halaman berikutnya!");
+            window.location.href = this.href;
+        });
+    </script>
+
+</body>
+
+</html>
